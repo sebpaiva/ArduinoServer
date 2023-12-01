@@ -8,12 +8,7 @@ from flask import Flask, request, jsonify
 import copy
 from queue import PriorityQueue
 
-
 app = Flask(__name__)
-
-@app.route("/")
-def hello_world():
-    return "Hello, World!"
 
 
 def printMaze(maze):
@@ -345,7 +340,8 @@ class MazeSolver:
             new_moves = current_move.generate_moves()
 
             for new_move in new_moves:
-                new_move.cost_to_end_estimate = distance_from_objective(new_move.current_coordinate, self.end_coordinate)
+                new_move.cost_to_end_estimate = distance_from_objective(new_move.current_coordinate,
+                                                                        self.end_coordinate)
                 # print("Putting item in queue:", new_move.cost_from_origin + new_move.cost_to_end_estimate, new_move.moves_from_origin)
                 self.maze_move_possibilities.put(new_move)
 
@@ -423,3 +419,29 @@ class Move(Enum):
 
 if __name__ == "__main__":
     main()
+
+
+@app.route("/generateMaze", methods=['GET'])
+def generateMaze():
+    # Generate the maze
+    print('Generated maze:')
+    generate_one_path_maze()
+
+    # Create start and end
+    print('Set random start and end points:')
+
+    create_start_point()
+    create_end_point()
+    set_current_position(start_point)
+    printMaze(maze)
+    return maze, 200
+
+
+@app.route("/findPath", methods=['GET'])
+def findPath():
+    # Generate Path
+    print('Generating path:')
+    maze_solver = MazeSolver(start_point, end_point)
+    directions = maze_solver.solve()
+    print("THE ANSWER IS", directions)
+    return directions, 200
