@@ -1,5 +1,4 @@
 # Imports
-import json
 import random
 import time
 from colorama import init
@@ -7,19 +6,21 @@ from colorama import Fore, Back, Style
 from enum import Enum
 from flask import Flask, request, jsonify
 import copy
+import json
 from queue import PriorityQueue
+
 
 
 def printMaze(maze):
     for i in range(0, height):
         for j in range(0, width):
-            if maze[i][j] == 'u':
+            if (maze[i][j] == 'u'):
                 print(Fore.WHITE + str(maze[i][j]), end=" ")
-            elif maze[i][j] == '*':
+            elif (maze[i][j] == '*'):
                 print(Fore.YELLOW + str(maze[i][j]), end=" ")
-            elif maze[i][j] == 'A':
+            elif (maze[i][j] == 'A'):
                 print(Fore.CYAN + str(maze[i][j]), end=" ")
-            elif maze[i][j] == 'B':
+            elif (maze[i][j] == 'B'):
                 print(Fore.CYAN + str(maze[i][j]), end=" ")
             else:
                 print(Fore.LIGHTRED_EX + str(maze[i][j]), end=" ")
@@ -287,6 +288,8 @@ def get_random_corridor():
 
 
 def main():
+    # Initialize colorama
+    init()
 
     # Generate the maze
     print('Generated maze:')
@@ -337,8 +340,7 @@ class MazeSolver:
             new_moves = current_move.generate_moves()
 
             for new_move in new_moves:
-                new_move.cost_to_end_estimate = distance_from_objective(new_move.current_coordinate,
-                                                                        self.end_coordinate)
+                new_move.cost_to_end_estimate = distance_from_objective(new_move.current_coordinate, self.end_coordinate)
                 # print("Putting item in queue:", new_move.cost_from_origin + new_move.cost_to_end_estimate, new_move.moves_from_origin)
                 self.maze_move_possibilities.put(new_move)
 
@@ -414,7 +416,11 @@ class Move(Enum):
     RIGHT = 4
 
 
+if __name__ == "__main__":
+    main()
+
 app = Flask(__name__)
+
 
 if __name__ == "__app__":
     # Initialize colorama
@@ -434,6 +440,11 @@ def generateMaze():
     create_end_point()
     set_current_position(start_point)
     printMaze(maze)
+
+    # Generate Path
+    print('The original found path is:')
+    maze_solver = MazeSolver(start_point, end_point)
+    print("THE ANSWER IS", maze_solver.solve())
     return json.dumps(maze, separators=(', ', ', \n')), 200
 
 
