@@ -10,7 +10,6 @@ import json
 from queue import PriorityQueue
 
 
-
 def printMaze(maze):
     for i in range(0, height):
         for j in range(0, width):
@@ -88,7 +87,8 @@ maze = []
 
 
 def generate_one_path_maze():
-    maze.clear()
+    global maze
+    maze = []
 
     # Denote all cells as unvisited
     for i in range(0, height):
@@ -111,11 +111,8 @@ def generate_one_path_maze():
 
     # Mark it as cell and add surrounding walls to the list
     maze[starting_height][starting_width] = cell
-    walls = []
-    walls.append([starting_height - 1, starting_width])
-    walls.append([starting_height, starting_width - 1])
-    walls.append([starting_height, starting_width + 1])
-    walls.append([starting_height + 1, starting_width])
+    walls = [[starting_height - 1, starting_width], [starting_height, starting_width - 1],
+             [starting_height, starting_width + 1], [starting_height + 1, starting_width]]
 
     # Denote walls in maze
     maze[starting_height - 1][starting_width] = '#'
@@ -123,7 +120,7 @@ def generate_one_path_maze():
     maze[starting_height][starting_width + 1] = '#'
     maze[starting_height + 1][starting_width] = '#'
 
-    while (walls):
+    while walls:
         # Pick a random wall
         rand_wall = walls[int(random.random() * len(walls)) - 1]
 
@@ -246,19 +243,19 @@ class Coordinate:
     y = -1
     x = -1
 
-    # def f(self):
-    #     return 'hello world'
-
 
 start = "A"
 end = "B"
 start_point = Coordinate()
 end_point = Coordinate()
 current_position = Coordinate()
+is_ready = False
 
 
 def create_start_point():
     x, y = get_random_corridor()
+    global start_point
+    global end_point
     start_point.y = y
     start_point.x = x
     maze[y][x] = start
@@ -266,6 +263,12 @@ def create_start_point():
 
 def create_end_point():
     x, y = get_random_corridor()
+    global start_point
+    global end_point
+
+    while x == start_point.x or y == start_point.y:
+        x, y = get_random_corridor()
+
     end_point.y = y
     end_point.x = x
     maze[y][x] = end
@@ -324,25 +327,36 @@ class MazeSolver:
     def __init__(self, s, e):
         self.start_coordinate = s
         self.end_coordinate = e
+        self.maze_move_possibilities = PriorityQueue()
 
     def solve(self):
         # Create the first move
+        print('Solving for maze:')
+        printMaze(maze)
+        print('Start point: ', start_point.y, start_point.x)
+        print('End point: ', end_point.y, end_point.x)
+
         move = MazeMovePossibility(self.start_coordinate, 0, [])
         move.cost_to_end_estimate = distance_from_objective(move.current_coordinate, self.end_coordinate)
-        # print("Putting item in queue:", move.cost_from_origin+move.cost_to_end_estimate, move.moves_from_origin)
+        print("Putting item in queue:", move.cost_from_origin + move.cost_to_end_estimate, move.moves_from_origin)
         self.maze_move_possibilities.put(move)
 
         while not self.maze_move_possibilities.empty():
             current_move = self.maze_move_possibilities.get()
             if current_move.current_coordinate.y == end_point.y and current_move.current_coordinate.x == end_point.x:
+                print('AT ENDPOINT: ', current_move.current_coordinate.y, end_point.y, current_move.current_coordinate.x, end_point.x)
                 return current_move.moves_from_origin
 
             new_moves = current_move.generate_moves()
 
             for new_move in new_moves:
-                new_move.cost_to_end_estimate = distance_from_objective(new_move.current_coordinate, self.end_coordinate)
-                # print("Putting item in queue:", new_move.cost_from_origin + new_move.cost_to_end_estimate, new_move.moves_from_origin)
+                new_move.cost_to_end_estimate = distance_from_objective(new_move.current_coordinate,
+                                                                        self.end_coordinate)
+                print("Putting item in queue:", new_move.cost_from_origin + new_move.cost_to_end_estimate,
+                      new_move.moves_from_origin)
                 self.maze_move_possibilities.put(new_move)
+
+        print('ERROR: ALL MOVES EXHAUSTED AND NO SOLUTION FOUND')
 
 
 class MazeMovePossibility:
@@ -421,14 +435,20 @@ if __name__ == "__main__":
 
 app = Flask(__name__)
 
-
 if __name__ == "__app__":
-    # Initialize colorama
     init()
 
 
 @app.route("/generateMaze", methods=['GET'])
 def generateMaze():
+    global start_point
+    global end_point
+    global current_position
+
+    start_point = Coordinate()
+    end_point = Coordinate()
+    current_position = Coordinate()
+
     # Generate the maze
     print('Generated maze:')
     generate_one_path_maze()
@@ -448,17 +468,19 @@ def generateMaze():
     return json.dumps(maze, separators=(', ', ', \n')), 200
 
 
+start_to_end_directions = []
+
+
 @app.route("/findPath", methods=['GET'])
 def findPath():
     # Generate Path
     print('Generating path:')
+    global start_point, end_point, start_to_end_directions
     maze_solver = MazeSolver(start_point, end_point)
     directions = maze_solver.solve()
     print("THE ANSWER IS", directions)
+    start_to_end_directions = directions
     return json.dumps([direction.name for direction in directions]), 200
-
-
-is_ready = False
 
 
 @app.route("/ready", methods=['GET'])
