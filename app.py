@@ -10,7 +10,6 @@ import copy
 from queue import PriorityQueue
 
 
-
 def printMaze(maze):
     for i in range(0, height):
         for j in range(0, width):
@@ -288,8 +287,6 @@ def get_random_corridor():
 
 
 def main():
-    # Initialize colorama
-    init()
 
     # Generate the maze
     print('Generated maze:')
@@ -417,11 +414,13 @@ class Move(Enum):
     RIGHT = 4
 
 
-# if __name__ == "__main__":
-#     main()
-
-
 app = Flask(__name__)
+
+if __name__ == "__app__":
+    # Initialize colorama
+    init()
+
+    app.run(host='0.0.0.0')
 
 
 @app.route("/generateMaze", methods=['GET'])
