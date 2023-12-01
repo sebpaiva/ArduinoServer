@@ -420,8 +420,6 @@ if __name__ == "__app__":
     # Initialize colorama
     init()
 
-    app.run(host='0.0.0.0')
-
 
 @app.route("/generateMaze", methods=['GET'])
 def generateMaze():
@@ -446,7 +444,7 @@ def findPath():
     maze_solver = MazeSolver(start_point, end_point)
     directions = maze_solver.solve()
     print("THE ANSWER IS", directions)
-    return json.dumps(directions), 200
+    return json.dumps([direction.name for direction in directions]), 200
 
 
 is_ready = False
