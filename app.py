@@ -453,13 +453,13 @@ is_ready = False
 
 
 @app.route("/ready", methods=['GET'])
-def generateMaze():
+def setReady():
     global is_ready
     is_ready = True
     return is_ready, 200
 
 
 @app.route("/isReadyToRescue", methods=['GET'])
-def generateMaze():
+def isReady():
     global is_ready
     return is_ready, 200
