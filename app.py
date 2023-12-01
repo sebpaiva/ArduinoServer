@@ -1,4 +1,5 @@
 # Imports
+import json
 import random
 import time
 from colorama import init
@@ -8,7 +9,6 @@ from flask import Flask, request, jsonify
 import copy
 from queue import PriorityQueue
 
-app = Flask(__name__)
 
 
 def printMaze(maze):
@@ -417,8 +417,11 @@ class Move(Enum):
     RIGHT = 4
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
+
+
+app = Flask(__name__)
 
 
 @app.route("/generateMaze", methods=['GET'])
@@ -434,7 +437,7 @@ def generateMaze():
     create_end_point()
     set_current_position(start_point)
     printMaze(maze)
-    return maze, 200
+    return json.dumps(maze), 200
 
 
 @app.route("/findPath", methods=['GET'])
@@ -444,4 +447,4 @@ def findPath():
     maze_solver = MazeSolver(start_point, end_point)
     directions = maze_solver.solve()
     print("THE ANSWER IS", directions)
-    return directions, 200
+    return json.dumps(directions), 200
