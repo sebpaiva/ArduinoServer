@@ -13,13 +13,13 @@ from queue import PriorityQueue
 def printMaze(maze):
     for i in range(0, height):
         for j in range(0, width):
-            if (maze[i][j] == 'u'):
+            if maze[i][j] == 'u':
                 print(Fore.WHITE + str(maze[i][j]), end=" ")
-            elif (maze[i][j] == '*'):
+            elif maze[i][j] == '*':
                 print(Fore.YELLOW + str(maze[i][j]), end=" ")
-            elif (maze[i][j] == 'A'):
+            elif maze[i][j] == 'A':
                 print(Fore.CYAN + str(maze[i][j]), end=" ")
-            elif (maze[i][j] == 'B'):
+            elif maze[i][j] == 'B':
                 print(Fore.CYAN + str(maze[i][j]), end=" ")
             else:
                 print(Fore.LIGHTRED_EX + str(maze[i][j]), end=" ")
@@ -436,7 +436,7 @@ def generateMaze():
     create_end_point()
     set_current_position(start_point)
     printMaze(maze)
-    return json.dumps(maze), 200
+    return json.dumps(maze, separators=(', ', ', \n')), 200
 
 
 @app.route("/findPath", methods=['GET'])
@@ -456,10 +456,10 @@ is_ready = False
 def setReady():
     global is_ready
     is_ready = True
-    return is_ready, 200
+    return json.dumps(is_ready), 200
 
 
 @app.route("/isReadyToRescue", methods=['GET'])
 def isReady():
     global is_ready
-    return is_ready, 200
+    return json.dumps(is_ready), 200
