@@ -447,3 +447,19 @@ def findPath():
     directions = maze_solver.solve()
     print("THE ANSWER IS", directions)
     return json.dumps(directions), 200
+
+
+is_ready = False
+
+
+@app.route("/ready", methods=['GET'])
+def generateMaze():
+    global is_ready
+    is_ready = True
+    return is_ready, 200
+
+
+@app.route("/isReadyToRescue", methods=['GET'])
+def generateMaze():
+    global is_ready
+    return is_ready, 200
