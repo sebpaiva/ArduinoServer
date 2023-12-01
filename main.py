@@ -9,6 +9,12 @@ import copy
 from queue import PriorityQueue
 
 
+app = Flask(__name__)
+
+@app.route("/")
+def hello_world():
+    return "Hello, World!"
+
 
 def printMaze(maze):
     for i in range(0, height):
