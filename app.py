@@ -389,7 +389,7 @@ class MazeMovePossibility:
             new_coord.x = self.current_coordinate.x
 
             m = copy.deepcopy(self.moves_from_origin)
-            m.append(Move.UP)
+            m.append(Move.U)
             new_moves.append(MazeMovePossibility(new_coord, new_cost, m))
         if is_coordinate_in_bounds(self.current_coordinate.y + 1, self.current_coordinate.x):
             new_coord = Coordinate()
@@ -397,7 +397,7 @@ class MazeMovePossibility:
             new_coord.x = self.current_coordinate.x
 
             m = copy.deepcopy(self.moves_from_origin)
-            m.append(Move.DOWN)
+            m.append(Move.D)
             new_moves.append(MazeMovePossibility(new_coord, new_cost, m))
         if is_coordinate_in_bounds(self.current_coordinate.y, self.current_coordinate.x + 1):
             new_coord = Coordinate()
@@ -405,7 +405,7 @@ class MazeMovePossibility:
             new_coord.x = self.current_coordinate.x + 1
 
             m = copy.deepcopy(self.moves_from_origin)
-            m.append(Move.RIGHT)
+            m.append(Move.R)
             new_moves.append(MazeMovePossibility(new_coord, new_cost, m))
         if is_coordinate_in_bounds(self.current_coordinate.y, self.current_coordinate.x - 1):
             new_coord = Coordinate()
@@ -413,7 +413,7 @@ class MazeMovePossibility:
             new_coord.x = self.current_coordinate.x - 1
 
             m = copy.deepcopy(self.moves_from_origin)
-            m.append(Move.LEFT)
+            m.append(Move.L)
             new_moves.append(MazeMovePossibility(new_coord, new_cost, m))
 
         return new_moves
@@ -424,10 +424,10 @@ def is_coordinate_in_bounds(y, x):
 
 
 class Move(Enum):
-    DOWN = 1
-    UP = 2
-    LEFT = 3
-    RIGHT = 4
+    D = 1
+    U = 2
+    L = 3
+    R = 4
 
 
 if __name__ == "__main__":
@@ -480,7 +480,7 @@ def findPath():
     directions = maze_solver.solve()
     print("THE ANSWER IS", directions)
     start_to_end_directions = directions
-    return {'directions': json.dumps([direction.name for direction in directions]).replace("\"", "'"), 'size': len(directions)}, 200
+    return {'dir': json.dumps([direction.name for direction in directions]).replace("\"", "'")}, 200
 
 
 @app.route("/ready", methods=['GET'])
