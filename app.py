@@ -480,17 +480,18 @@ def findPath():
     directions = maze_solver.solve()
     print("THE ANSWER IS", directions)
     start_to_end_directions = directions
-    return json.dumps([direction.name for direction in directions]), 200
+    return {'directions': json.dumps([direction.name for direction in directions]).replace("\"", "'"), 'size': len(directions)}, 200
 
 
 @app.route("/ready", methods=['GET'])
 def setReady():
     global is_ready
     is_ready = True
-    return json.dumps(is_ready), 200
+    return "{" + json.dumps(is_ready) + "}", 200
 
 
 @app.route("/isReadyToRescue", methods=['GET'])
 def isReady():
     global is_ready
-    return json.dumps(is_ready), 200
+    return "{" + json.dumps(is_ready) + "}", 200
+
