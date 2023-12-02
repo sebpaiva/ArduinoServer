@@ -489,7 +489,8 @@ def findPath():
     print(end_to_start_directions)
     total_directions = start_to_end_directions + end_to_start_directions
 
-    return {'dir': json.dumps([direction.name for direction in total_directions]).replace("\"", "'")}, 200
+    # take json dumps of the whole thing
+    return json.dumps({'dir': [direction.name for direction in total_directions]}), 200
 
 
 def calcEndToStartDirections(directions):
