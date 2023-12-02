@@ -344,7 +344,8 @@ class MazeSolver:
         while not self.maze_move_possibilities.empty():
             current_move = self.maze_move_possibilities.get()
             if current_move.current_coordinate.y == end_point.y and current_move.current_coordinate.x == end_point.x:
-                print('AT ENDPOINT: ', current_move.current_coordinate.y, end_point.y, current_move.current_coordinate.x, end_point.x)
+                print('AT ENDPOINT: ', current_move.current_coordinate.y, end_point.y,
+                      current_move.current_coordinate.x, end_point.x)
                 return current_move.moves_from_origin
 
             new_moves = current_move.generate_moves()
@@ -469,18 +470,40 @@ def generateMaze():
 
 
 start_to_end_directions = []
+end_to_start_directions = []
 
 
 @app.route("/findPath", methods=['GET'])
 def findPath():
     # Generate Path
     print('Generating path:')
-    global start_point, end_point, start_to_end_directions
+    global start_point, end_point, start_to_end_directions, end_to_start_directions
     maze_solver = MazeSolver(start_point, end_point)
     directions = maze_solver.solve()
     print("THE ANSWER IS", directions)
     start_to_end_directions = directions
-    return {'dir': json.dumps([direction.name for direction in directions]).replace("\"", "'")}, 200
+
+    # Add directions to go back
+    end_to_start_directions = []
+    calcEndToStartDirections(start_to_end_directions)
+    print(end_to_start_directions)
+    total_directions = start_to_end_directions + end_to_start_directions
+
+    return {'dir': json.dumps([direction.name for direction in total_directions]).replace("\"", "'")}, 200
+
+
+def calcEndToStartDirections(directions):
+    d = copy.deepcopy(directions)
+    d.reverse()
+    for direction in d:
+        if direction == Move.U:
+            end_to_start_directions.append(Move.D)
+        if direction == Move.D:
+            end_to_start_directions.append(Move.U)
+        if direction == Move.L:
+            end_to_start_directions.append(Move.R)
+        if direction == Move.R:
+            end_to_start_directions.append(Move.L)
 
 
 @app.route("/ready", methods=['GET'])
@@ -494,4 +517,3 @@ def setReady():
 def isReady():
     global is_ready
     return "{" + json.dumps(is_ready) + "}", 200
-
