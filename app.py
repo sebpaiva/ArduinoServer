@@ -81,8 +81,8 @@ def mark_lower_cell(rand_wall, maze, walls):
 wall = '#'
 cell = '*'
 unvisited = 'u'
-height = 6
-width = 7
+height = 4
+width = 6
 maze = []
 
 
