@@ -445,6 +445,9 @@ def generateMaze():
     global start_point
     global end_point
     global current_position
+    global is_ready
+
+    is_ready = False
 
     start_point = Coordinate()
     end_point = Coordinate()
@@ -477,6 +480,9 @@ end_to_start_directions = []
 def findPath():
     # Generate Path
     print('Generating path:')
+    if not maze:
+        generateMaze()
+
     global start_point, end_point, start_to_end_directions, end_to_start_directions
     maze_solver = MazeSolver(start_point, end_point)
     directions = maze_solver.solve()
@@ -490,7 +496,7 @@ def findPath():
     total_directions = start_to_end_directions + end_to_start_directions
 
     # take json dumps of the whole thing
-    return json.dumps({'dir': [direction.name for direction in total_directions]}), 200
+    return json.dumps({'d': [direction.name for direction in total_directions]}), 200
 
 
 def calcEndToStartDirections(directions):
